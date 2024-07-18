@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Meteorites</string>
+    <string name="meteorites">Meteorites</string>
+    <string name="stats">Stats</string>
+    <string name="map">Map</string>
+    <string name="loading_data">Loading data...</string>
+    <string name="landings_since_2000">Meteorite landings per year since the year 2000</string>
+    <string name="top_10_heaviest_meteorites">Top 10 heaviest meteorites</string>
+</resources>
