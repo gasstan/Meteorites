@@ -1,15 +1,19 @@
 package com.gasstan.meteorites.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.gasstan.meteorites.utils.YearSerializer
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Entity(tableName = "Meteorites")
 @Serializable
 data class Meteorite(
   @SerialName("name")
   val name: String,
+  @PrimaryKey
   @SerialName("id")
   val id: String,
   @SerialName("nametype")
@@ -43,5 +47,17 @@ data class Geolocation(
   val latitude: String,
   @SerialName("longitude")
   val longitude: String
-)
+) {
+  companion object {
+    fun parse(geoLocation: String): Geolocation? {
+      if (geoLocation == "null") return null
+      val (lat, lng) = geoLocation.split(",")
+      return Geolocation(lat, lng)
+    }
+  }
+
+  override fun toString(): String {
+    return "$latitude,$longitude"
+  }
+}
 

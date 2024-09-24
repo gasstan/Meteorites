@@ -11,7 +11,7 @@ android {
 
   defaultConfig {
     applicationId = "com.gasstan.meteorites"
-    minSdk = 24
+    minSdk = 26
     targetSdk = 34
     versionCode = 1
     versionName = "1.0"
@@ -78,6 +78,13 @@ dependencies {
   //maps
   implementation(libs.google.maps)
   implementation(libs.google.maps.utils)
+
+  //room
+  implementation(libs.bundles.room)
+  kapt(libs.room.annotation)
+
+  //dataStore
+  implementation(libs.datastore)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

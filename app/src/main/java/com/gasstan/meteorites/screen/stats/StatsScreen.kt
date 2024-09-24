@@ -1,6 +1,6 @@
 package com.gasstan.meteorites.screen.stats
 
-import android.util.Range
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,16 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,6 +34,7 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
 
 @Composable
 fun StatsScreen(viewModel: MeteoritesViewModel = koinViewModel()) {
@@ -68,11 +65,11 @@ private fun Content(
 
   Column(modifier = Modifier.padding(MeteoritesTheme.dimens.paddingSmall)) {
     Text(
-      text = stringResource(R.string.landings_since_2000),
+      text = stringResource(R.string.landings_since_2011),
       style = MaterialTheme.typography.titleMedium
     )
     Spacer(modifier = Modifier.height(MeteoritesTheme.dimens.paddingSmall))
-    MeteoritesSince2000(meteorites = meteorites)
+    MeteoritesSince2011(meteorites = meteorites)
     Spacer(modifier = Modifier.height(MeteoritesTheme.dimens.paddingLarge))
     Text(
       text = stringResource(R.string.top_10_heaviest_meteorites),
@@ -84,12 +81,15 @@ private fun Content(
 }
 
 @Composable
-private fun MeteoritesSince2000(meteorites: List<Meteorite>) {
+private fun MeteoritesSince2011(meteorites: List<Meteorite>) {
   val producer = remember { CartesianChartModelProducer() }
   LaunchedEffect(Unit) {
     producer.runTransaction {
       val data =
-        meteorites.mapNotNull { it.year }.groupBy { it }.filter { it.key in 2000..2024 }
+        meteorites
+          .mapNotNull { it.year }
+          .groupBy { it }
+          .filter { it.key <= LocalDate.now().year }
       lineSeries {
         series(
           x = data.keys,
@@ -109,6 +109,7 @@ private fun MeteoritesSince2000(meteorites: List<Meteorite>) {
   )
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 private fun TopTenHeaviestMeteorites(topTenMeteorites: List<Meteorite>) {
   if (topTenMeteorites.isEmpty()) {
@@ -123,9 +124,13 @@ private fun TopTenHeaviestMeteorites(topTenMeteorites: List<Meteorite>) {
   }
   Column {
     topTenMeteorites.forEach {
+      val mass = it.mass?.div(1000)?.let { m ->
+        String.format("%.1f", m)
+      } ?: "Unknown"
+
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text("${it.name}(${it.year ?: "Unknown"})")
-        Text(it.mass?.let { "${it.div(1000)} kg" } ?: "Unknown")
+        Text("$mass kg")
       }
     }
   }
